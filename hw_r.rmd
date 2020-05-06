@@ -1,0 +1,279 @@
+---
+title: "R_review_h24076142"
+author: "Ricky Chyo"
+date: "2020/5/6"
+output: 
+  html_document:
+    theme: cerulean
+---
+![](https://cdn.hk01.com/di/media/images/564720/org/7a5b31ccd89a2360794c1ef6bf54393f.jpg/0ws2YFTJcguqJ5hF1Hp3V8ELwZfAP_rMiLU2UYi1NlE?v=w1920) 很酷的功能
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### 因為r並不是我第一個接觸的程式語言(第一個是python)，所以在學r的時候腦袋中就已經有一些寫程式的邏輯了，剩下要學的就剩語法的部分而已，儘管如此，在對語法不熟悉的情況下，只靠程式邏輯邊查語法邊寫r也是挺花時間的。在這裡小小總結一下，我不會在此作業中對於在上學期學到的所有語法進行回顧及複習，而是針對自己較感興趣的部分，以及課程中發現的r與python的不同之處進行說明。
+
+### 學程式一開始學的不外乎是定義變數r及四則運算
+```{r, include = TRUE}
+a <- c(10 + 3,10 - 3,10 * 3,10 / 3,10 ^ 3,10 %% 3,10 %/% 3) #定義變數可以用<-或是=不過好像用<-才是r比較正統的用法，為了入境隨俗所以我用r的時候都用<-來定義變數，另外說明一下，在python要建立一個向量通常是用list()，而r則是用c()
+```
+### r和python還有個很大的不同，就是print()的功能
+```{r, include=TRUE}
+print(a,a)
+paste(a)
+cat(a)
+```
+### 從以上結果可以看出，print()只會輸出第一格變數，而paste則會將變數轉為字串再輸出，cat()則可以算是比較接近python的print()的功能
+
+### 以下是跟遺漏值NA有關的函式
+```{r, include=TRUE}
+b <- c(2,6,1,4,5,7,NA,9)
+is.na(b)
+mean(b,na.rm = TRUE)
+cat(na.omit(b))
+
+```
+
+### 接下來就是control flow的部分了，很考驗學習程式者的想像力及邏輯的地方，我認為只要學會這些，就可以自稱會寫一半的r了(python也是一樣)
+```{r, include=TRUE}
+c <- 0
+for(n in 1:100){   #舉個簡單的for迴圈例子
+  c <- c + n
+}
+c
+if ((c %% 10) == 0){   #簡單的if判斷句
+  cat("great","\n")   #"\n"是換行，很酷吧
+}
+while (c > 0){   #和for迴圈不同之處在於，while()是用一連串的true、false判斷，而for()則是直接設定範圍
+  c <- c-1
+}
+c 
+```
+
+### 結合上面提到的語法和function的功能，這裡就展示一下上學期寫的r作業，並做一些說明及小更動，由於程式冗長，也不用看得太認真，可以只看有註解的地方就行
+```{r, include= TRUE}
+v1 <- c(15, 10, 22, 1, 0, 11, 17, 10, 9, 0, 11, 16, 17, 15, 17, 0)   #0是遺漏值，我們得把他處理掉
+lazyricky <- function(v) {   #function可以任意取名喔，很棒吧  
+  for (i in 1:length(v)) {
+    if (v[i] == 0) v[i] <- NA   #我用的方法是把0都替換成na再處理
+  }
+  quest <- c("Sum", "Length", "Average", "# of odd", 
+             "# of 10", "Max")
+  v <- v[!is.na(v)]   #經由條件判斷取出不是na的部分，一樣的答案能有不同的解法，這就是r有趣的地方
+  ans4 <- c(sum(v), length(v))
+  ans4 <- c(ans4, round(ans4[1]/ans4[2], digits = 6), 
+            length(v[v%%2 != 0]), length(v[v == 10]), max(v))
+  for (i in 1:6) {
+    cat(paste("## (", i, ") ", quest[i], ": ", ans4[i]), "\n")
+  }
+}
+lazyricky(v1)
+
+v2 <- c(17, 15, 0, 11, 12, 17, 11, 20, 15, 0, 13, 17, 12, 13, 13)   #另一筆資料
+lazyricky(v2)
+```
+
+### 一些rmd內的酷操作
+Normal distrbution:
+$$f(x)=\frac{1}{\sigma\sqrt{2\pi}}e^{-\frac{(x-\mu)^{2}}{2\sigma^{2}}}$$
+
+### 畫圖，程式碼很簡單，就是plot(想畫的分布,哪種圖,標題......)之類的設定一下就行了，但因為太長了所以我把程式碼的部分關掉
+```{r,fig.width=10,fig.height=8,include=TRUE,echo=FALSE, fig.height=8, r,fig.width=10}
+par(mfrow = c(2,2)) #讓圖形2x2由左排到右，由上排到下
+##graph1##
+n <- 10; x <- c(0:n)
+#先畫其中一組函數的圖，再把其他的陸續加上去
+#dbinom(x,n,p)
+plot(dbinom(x,n,0.7),
+     type = "p",
+     main = title(expression(paste("Binomial(n,p) with n = 10"))),
+     pch = 19,
+     cex = 1.5,
+     col = "green",
+     xlim = c(0,11),
+     ylim = c(0.0,0.4),
+     xlab = "x",
+     ylab = "pmf")
+#points和lines會默認加到原有圖形上
+points(dbinom(x,n,0.2),
+       pch = 17,
+       cex = 1.5,
+       col = "pink")
+points(dbinom(x,n,0.5),
+       pch = 8,
+       cex = 1.5,
+       col = "cyan")
+lines(type = "h",
+      dbinom(x,n,0.7),
+      lty = 1,
+      lwd = 2,
+      col = "green")
+lines(type = "h",
+      dbinom(x,n,0.5),
+      lty = 4,
+      lwd = 2,
+      col = "cyan")
+lines(type = "h",
+      dbinom(x,n,0.2),
+      lty = 2,
+      lwd = 2,
+      col = "pink")
+legend("topright",
+       pch = c(19,8,17),
+       lty = c(1,4,2),
+       col = c("green","cyan","pink"),
+       legend = c("p = 0.7","p = 0.5", "p = 0.2"))
+##graph2##
+lam <- 3; x <- c(0:5)
+#dgamma(x,alpha,lambda)
+curve(dgamma(x,1,lam),0,5,
+     type = "l",
+     main = title(expression(paste("Gamma(",alpha,",",lambda,")with",lambda, "=3"))),
+     xlab = "x",
+     ylab = "pdf",
+     xlim = c(0,5),
+     ylim = c(0.0,3.0),
+     lwd = 2,
+     col = "yellow")
+#curve好像沒有默認，所以再打一個add=TRUE才會加到原有圖形上
+curve(dgamma(x,2,lam),
+      lty = 2,
+      lwd = 2,
+      col = "pink",
+      add = TRUE)
+curve(dgamma(x,3,lam),
+      lty = 4,
+      lwd = 2,
+      col = "cyan",
+      add = TRUE)
+curve(dgamma(x,5,lam),
+      lty = 5,
+      lwd = 2,
+      col = "grey",
+      add = TRUE)
+#這裡的legend試了很多次，果然expression和paste的配合很重要
+legend("topright",
+       lty = c(1,2,4,5),
+       col = c("yellow","pink","cyan","grey"),
+       legend = c(expression(paste("",alpha," = 1")),
+                  expression(paste("",alpha," = 2")),
+                  expression(paste("",alpha," = 3")),
+                  expression(paste("",alpha," = 5"))))
+##graph3##
+sd <- 1; x <- c(0:20)
+#dnorm(x,mean,sd)
+curve(dnorm(x,5,sd),0,20,
+     type = "l",
+     main = title(expression(paste("N(",mu,",",sigma^2,") with ",sigma^2," = 1"))),
+     lty = 1,
+     lwd = 2,
+     xlab = "x",
+     ylab = "pdf",
+     xlim = c(0,20),
+     ylim = c(0,0.4),
+     col = "brown")
+curve(dnorm(x,10,sd),
+      lty = 2,
+      lwd = 2,
+      col = "red",
+      add = TRUE)
+curve(dnorm(x,12,sd),
+      lty = 4,
+      lwd = 2,
+      col = "blue",
+      add = TRUE)
+curve(dnorm(x,14,sd),
+      lty = 5,
+      lwd = 2,
+      col = "grey",
+      add = TRUE)
+legend("topright",
+       lty = c(1,2,4,5),
+       col = c("brown","red","blue","grey"),
+       legend = c(expression(paste("",mu," = 5")),
+                  expression(paste("",mu," = 10")),
+                  expression(paste("",mu," = 12")),
+                  expression(paste("",mu," = 14"))))
+##graph4##
+mean <- 0; x <- c(-9:9)
+curve(dnorm(x,mean,0.5),-9,9,
+     type = "l",
+     main = title(expression(paste("N(",mu,",",sigma^2,") with ",mu," = 0"))),
+     lty = 1,
+     lwd = 2,
+     xlab = "x",
+     ylab = "pdf",
+     ylim = c(0.0,0.8))
+curve(dnorm(x,mean,1),
+      lty = 2,
+      lwd = 2,
+      col = "red",
+      add = TRUE)
+curve(dnorm(x,mean,2),
+      lty = 4,
+      lwd = 2,
+      col = "blue",
+      add = TRUE)
+curve(dnorm(x,mean,3),
+      lty = 5,
+      lwd = 2,
+      col = "grey",
+      add = TRUE)
+legend("topright",
+       lty = c(1,2,4,5),
+       col = c("black","red","blue","grey"),
+       legend = c(expression(paste("",sigma," = 0.5")),
+                  expression(paste("",sigma," = 1")),
+                  expression(paste("",sigma," = 2")),
+                  expression(paste("",sigma," = 3"))))
+
+```
+
+### 期末考的愛心圖
+```{r, include=TRUE}
+x <- seq(-1.5, 1.5, 0.01); y <- seq(-1.5, 1.5, 0.01)
+xyvector <- c()
+for (i in 1:length(x)){
+  for (j in 1:length(y)){
+    cond <- (x[i]^2)*(y[j]^3) - (x[i]^2 + y[j]^2 - 1)^3
+    if (cond >= 0) {
+      xyvector <- c(xyvector,x[i],y[j])
+    }
+  }
+}
+xym <- matrix(xyvector, ncol = 2, byrow = TRUE)
+plot(xym,
+     type = "p",
+     col = "pink")
+```
+
+### 最後一個一樣是期末考時寫出來的東西，dummy variable，因為我沒有上過資料科學導論，在期末考第一次了解這東西的當下就要寫出來還挺刺激的，不過就像我前面提到，只要control flow學得好，要寫dummy variable也是輕輕鬆鬆啦
+```{r, include=TRUE}
+library("titanic")   #以鐵達尼號為例
+data(titanic_train)
+tdata <- titanic_train   #為鐵達尼號的資料設定變數
+people <- length(tdata[,1])   #人數
+
+##然後就是dummy variable的function了##
+dummy <- function(d){
+  kinds <- unique(d)   #輸入項為data的其中一個變數，在此提取該變數的向量
+  dumvector <- c()
+  for (i in 1:people){
+    for (j in 1:length(kinds)){
+      if (d[i] == kinds[j]) {
+        dumvector <- c(dumvector,1)
+      } else {
+        dumvector <- c(dumvector,0)
+      }
+    }
+  }
+  result <- matrix(dumvector,nrow = people, ncol = length(kinds))
+  colnames(result) <- kinds
+  return(result)
+}
+```
+## 到這裡可以稍微看看就直接拉到底了
+```{r, include=TRUE}
+dummy(tdata$Sex)  #以性別為例
+```
+### 上個學期的r課程，功課非常簡單，但考試超難，而在考試中學到的也比平常複習、寫作業來的多，可以說是每經過一次考試，我的r語言能力就大幅增長，所以這個作業我放了不少考試的內容。最後再做一個總結吧，比起語法，我學到更多的是r與python的不同之處，像是python是從0開始算的程式語言，r則是1，光是這點，若一不小心將python的語言邏輯套用在r上的話，就有許多需要debug的地方了。以上，就是我對上學期r課程的複習與回顧。
